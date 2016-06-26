@@ -12,36 +12,38 @@ new Vue({
         timeLeft: 0,
         dashOffset: null,
         timeLeftText: '',
-        textSize: '1.5em'
+        textSize: '1.9em'
     },
     ready: function () {
         var self = this;
-        self.durationLeft = moment.duration({
-            'seconds': 10,
-            'hour': 0,
-            'minutes': 0
-        });
+        self.targetTime = moment('2016-06-27 20:00');
 
         var initialOffset = 440;
         var i = 1
-        var time = self.durationLeft.asSeconds();
-
+        var diffSeconds = self.targetTime.diff(moment(), 's');
         var interval = setInterval(function () {
-            self.durationLeft.subtract(1, 's');
-            var offset = initialOffset - (i * (initialOffset / time));
+            var diffSecondsFromNow = self.targetTime.diff(moment(), 's');
+
+            self.durationLeft = moment.duration(diffSecondsFromNow, 's');
+
+            var offset = sprintf("%d.0", initialOffset - (i * (initialOffset / diffSeconds)));
             self.dashOffset = offset;
 
-            var hours = self.durationLeft.hours();
+            // add additional Days to hours (days can not be displayed
+            var hours = self.durationLeft.hours() + (24*self.durationLeft.days());
 
             if (hours == 0) {
+                // increase text size cause hours not shown anymore
                 self.textSize = '2.8em';
                 self.timeLeftText = sprintf("%s:%s", pad(self.durationLeft.minutes()), pad(self.durationLeft.seconds()));
             } else {
                 self.timeLeftText = sprintf("%s:%s:%s", pad(hours), pad(self.durationLeft.minutes()), pad(self.durationLeft.seconds()));
             }
-            if (i == time) {
+
+            if (i == diffSeconds) {
                 clearInterval(interval);
             }
+
             i++;
         }, 1000);
     }
