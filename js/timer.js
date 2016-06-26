@@ -21,7 +21,7 @@ new Vue({
             'hour': 0,
             'minutes': 0
         });
-        ;
+
         var initialOffset = 440;
         var i = 1
         var time = self.durationLeft.asSeconds();
